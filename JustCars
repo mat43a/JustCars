@@ -13,6 +13,7 @@ struct Cars
 class Program
 {
     private static char n;
+    private static List<Cars> Cars;
     private static readonly char X;
 
     public static char N { get; private set; }
@@ -23,22 +24,40 @@ class Program
         Console.ForegroundColor = color;
         Console.Write(c);
     }
-    static void Main()
+    static void PrintStringOnPosition(int x, int y, string str, ConsoleColor color = ConsoleColor.Gray)
+    {
+        Console.SetCursorPosition(x, y);
+        Console.ForegroundColor = color;
+        Console.Write(str);
+    }
+    static void Main(string str)
     {
         int playfildWidth = 5;
+        int livesCount = 5;
         Console.BufferHeight = Console.WindowHeight = 20;
         Console.BufferWidth = Console.WindowWidth = 30;
         Cars userCars = new Cars();
         userCars.x = 2;
         userCars.y = Console.WindowHeight;
-        userCars.c = "@";
+        userCars.c = `@`;
         userCars.color = ConsoleColor.Yellow;
-
+        Random randomGenerator = new Random();   
+        List<Cars> cars = new List<Cars>(); 
         while (true)
         {
+            Cars newCar = new Cars();
+            newCar.color = ConsoleColor.Yellow;
+            newCar.x = randomGenerator.Next (0, playfildWidth);
+            newCar.y = 0;
+            newCar.c = "#";
+            cars.Add(newCar);
             if (Console.KeyAvailable)
             {
                 ConsoleKeyInfo pressedKey = Console.ReadKey(true);
+                while (Console.KeyAvailable)
+                {
+                    Console.ReadKey (true);
+                }
                 if (pressedKey.Key == ConsoleKey.LeftArrow)
                 {
                     if (userCars.x - 1 >= 0)
@@ -56,11 +75,43 @@ class Program
                     
                 }
             }
+            List<Cars> newList=new List<Cars>();
+            for (int i = 0; i < cars.Count; i++)
+            {
+                Cars oldCars = cars[i];
+                Cars newCars = new Cars();
+                newCars.color = ConsoleColor.Yellow;
+                newCars.x = (int)oldCars.x;
+                newCars.y = (int)oldCars.y + 1;
+                newCars.c = oldCars.c;
+                if (newCars.y == userCars.y && newCars.x == userCars.x)
+                {
+                    livesCount--;
+                    if (livesCount <= 0)
+                    {
+                        PrintStringOnPosition(8, 10, "GAME OVER", ConsoleColor.Red);
+                        PrintStringOnPosition(8, 15, "PRESS [ENTER] TO EXIT", ConsoleColor.Red);
+                        Console.ReadLine();
+                        return;
+                    }
+                }
+                if (newCars.y < Console.WindowWidth)
+                {
+                    newList.Add(newCars);
+                }
+                
+            }
+            Cars = newList;
             Console.Clear();
             Thread.Sleep (100);
-            PrintOnPosition(userCars.x,userCars.y,userCars.c, userCars.color);  
-           
+            PrintOnPosition(userCars.x,userCars.y,userCars.c, userCars.color);
+            foreach (Cars car in cars)  
+            {
+                PrintOnPosition(car.x, car.y, car.c, car.color);
+            }
+            PrintStringOnPosition(8, 4, "Lives" + livesCount, ConsoleColor.White);
             
         }
     }
+
 }
