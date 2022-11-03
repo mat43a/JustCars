@@ -32,6 +32,7 @@ class Program
     }
     static void Main(string str)
     {
+        int speed = 100;
         int playfildWidth = 5;
         int livesCount = 5;
         Console.BufferHeight = Console.WindowHeight = 20;
@@ -45,11 +46,17 @@ class Program
         List<Cars> cars = new List<Cars>(); 
         while (true)
         {
+            speed++;
+            if (speed > 400)
+            {
+                speed = 400;
+            }
+            bool hitted = false;
             Cars newCar = new Cars();
             newCar.color = ConsoleColor.Yellow;
             newCar.x = randomGenerator.Next (0, playfildWidth);
             newCar.y = 0;
-            newCar.c = "#";
+            newCar.c = '# ';
             cars.Add(newCar);
             if (Console.KeyAvailable)
             {
@@ -87,6 +94,7 @@ class Program
                 if (newCars.y == userCars.y && newCars.x == userCars.x)
                 {
                     livesCount--;
+                    hitted= true;
                     if (livesCount <= 0)
                     {
                         PrintStringOnPosition(8, 10, "GAME OVER", ConsoleColor.Red);
@@ -103,14 +111,23 @@ class Program
             }
             Cars = newList;
             Console.Clear();
-            Thread.Sleep (100);
             PrintOnPosition(userCars.x,userCars.y,userCars.c, userCars.color);
             foreach (Cars car in cars)  
             {
                 PrintOnPosition(car.x, car.y, car.c, car.color);
             }
+            if (hitted)
+            {
+                cars.Clear();
+                PrintOnPosition(userCars.x, userCars.y, 'X', ConsoleColor.Red);
+            }
+            else
+            {
+                PrintOnPosition(userCars.x,userCars.y, userCars.c, ConsoleColor.Red);
+            }
             PrintStringOnPosition(8, 4, "Lives" + livesCount, ConsoleColor.White);
-            
+            PrintStringOnPosition(8, 5, "Speed" + speed, ConsoleColor.White);
+            Thread.Sleep((int)(600-speed));
         }
     }
 
